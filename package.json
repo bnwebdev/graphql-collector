@@ -1,0 +1,19 @@
+{
+  "name": "graphql-collector",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "description": "Bind required fields with database select query",
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Nikita Bereziuk",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-fields": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/graphql-fields": "^1.3.4"
+  }
+}
