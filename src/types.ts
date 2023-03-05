@@ -1,8 +1,10 @@
 import graphqlFields from "graphql-fields";
 
-type GraphQLPrimitiveType = null | number | string | boolean | Date;
+export type GraphQLPrimitiveType = null | number | string | boolean | Date;
 
 export type GraphQLResolveInfo = Parameters<typeof graphqlFields>[0];
+
+export type GraphQLFieldFnEndHandler<Ctx> = (ctx: Ctx) => void;
 
 export type GraphQLFieldFnHandler<Ctx, R extends Record<string, any>> = {
   (ctx: Ctx): void | GraphQLFieldRecordHandler<Ctx, R>;

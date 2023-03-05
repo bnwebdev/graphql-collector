@@ -1,4 +1,4 @@
-import { GraphQLFieldHandler } from "./types";
+import { GraphQLFieldHandler } from "../types";
 
 export const handleFields = <Ctx, R extends Record<string, unknown>>(
   ctx: Ctx,

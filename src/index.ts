@@ -1,2 +1,3 @@
-export * from './GraphQLCollector'
-export * from './types'
+export * from "./GraphQLCollector";
+export * from "./tools";
+export * from "./types";
