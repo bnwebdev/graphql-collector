@@ -5,7 +5,8 @@
   "description": "This package helps to bind client requested grapqhl fields with database queries.",
   "scripts": {
     "watch": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "npm run build && npm publish"
   },
   "keywords": [],
   "author": "Nikita Bereziuk <nikitber@hotmail.com>",
