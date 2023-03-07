@@ -6,19 +6,17 @@ import { GraphQLCollectBaseContext } from "./types";
  *   title: string
  *   content: string
  * }
- * const collector = new GraphQLCollector<CollectContext, Post>({
- *   title: Collect('select', ['post.title']),
- *   content: Collect('select', ['post.content'])
+ * const collector = new GraphQLCollector<{ select: string[] }, Post>({
+ *   title: Collect('select', 'post.title'),
+ *   content: Collect('select', 'post.content')
  * })
  *
  * const rootResolver = {
  *   Query {
  *     post(_parent, _args, _context, info) {
- *       const collection = collector.collect(new Map(), info)
+ *       const { select } = collector.collect({ select: [] }, info)
  *
- *       const selects: string[] = [].concat(...collection.select)
- *
- *       return ORM.select(selects).execute()
+ *       return ORM.select(select).execute()
  *     }
  *   }
  * }
