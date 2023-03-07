@@ -3,3 +3,4 @@ src
 .gitignore
 package-lock.json
 tsconfig.json
+.DS_Store
