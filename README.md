@@ -8,15 +8,16 @@ npm install graphql-fields-collector
 
 ## Why was it made?
 
-In general, when we make a GraphQL resolver, we have to make a query to the database and return the data. But the client may need less fields than we take from the database. It takes time to transfer data.
+Typically, when creating a GraphQL resolver, we need to run a query against the database and
+return the data. However, sometimes the client may only require a subset of the data, which
+means unnecessary fields are being retrieved and transferred, leading to slower query times.
 
-This package was made to improve performance.
-
-The less we ask from database, the faster query is.
+To address this issue, this package has been developed that can improve query performance.
+By reducing the number of fields retrieved from the database, the query can be processed more quickly.
 
 ## Basic Usage
 
-First, we should create the collector:
+To begin, let's create the collector:
 
 ```ts
 import { GraphQLCollector } from "graphql-fields-collector";
@@ -49,24 +50,27 @@ const postCollector = new GraphQLCollector<Context, Post>({
     ctx.jeftJoin.push(["user", "user.id", "post.author_id"]);
 
     return {
-      id: (ctx) => ctx.select("user.id as authorId"),
-      name: (ctx) => ctx.select("user.name as authorName"),
+      id: (ctx) => ctx.select.push("user.id as authorId"),
+      name: (ctx) => ctx.select.push("user.name as authorName"),
     };
   },
   info: {
-    createdAt: (ctx) => ctx.select("post.createdAt"),
+    createdAt: (ctx) => ctx.select.push("post.createdAt"),
   },
 });
 ```
 
-Then we can use it in the graphql resolver:
+Next, we can utilize it within the GraphQL resolver:
 
 ```ts
 const resolvers = {
   Query: {
     // ...
     posts(_parent, _args, _context, info: GraphQLResolveInfo): Post[] {
-      const { select, leftJoin } = postCollector.collect({ select: [] }, info);
+      const { select, leftJoin } = postCollector.collect(
+        { select: [], leftJoin: [] },
+        info
+      );
 
       const query = leftJoin.reduce(
         (query, joinArgs) => query.leftJoin(...joinArgs),
@@ -80,7 +84,7 @@ const resolvers = {
 };
 ```
 
-Lets take the following graphql query
+Let's take the following GraphQL query
 
 ```
 query {
@@ -94,7 +98,7 @@ query {
 }
 ```
 
-We get the following:
+Than we get the following from the context:
 
 ```ts
 const select = ["post.id", "post.title", "user.name"];
@@ -107,7 +111,7 @@ Context and all operations are up to you. Change it freely!
 
 ### - Collect
 
-Collect works with array-like fields in context, you can
+Collect works with array-like fields in context
 
 ```ts
 const postCollector = new GraphQLCollector<Context, Post>({
@@ -115,7 +119,7 @@ const postCollector = new GraphQLCollector<Context, Post>({
   title: Collect("select", "post.title"),
   content: Collect("select", "post.content"),
   author: (ctx) => {
-    Collect("jeftJoin", ["user", "user.id", "post.author_id"]);
+    Collect("jeftJoin", ["user", "user.id", "post.author_id"])(ctx);
 
     return {
       id: Collect("select", "user.id as authorId"),
@@ -132,7 +136,7 @@ Also there are few wrappers to make code readable
 
 ### - Select
 
-Wrap Compose("select", ...selects) into Select(...selects)
+Wrap Collect("select", ...selects) into Select(...selects)
 
 ```ts
 const postCollector = new GraphQLCollector<Context, Post>({
@@ -140,7 +144,7 @@ const postCollector = new GraphQLCollector<Context, Post>({
   title: Select("post.title"),
   content: Select("post.content"),
   author: (ctx) => {
-    Collect("jeftJoin", ["user", "user.id", "post.author_id"]);
+    Collect("jeftJoin", ["user", "user.id", "post.author_id"])(ctx);
 
     return {
       id: Select("user.id as authorId"),
@@ -155,7 +159,7 @@ const postCollector = new GraphQLCollector<Context, Post>({
 
 ### - LeftJoin
 
-Wrap Compose("jeftJoin", [...leftJoinArgs]) into LeftJoin(...leftJoinArgs)
+Wrap Collect("jeftJoin", [...leftJoinArgs]) into LeftJoin(...leftJoinArgs)
 
 ```ts
 const postCollector = new GraphQLCollector<Context, Post>({
@@ -163,7 +167,7 @@ const postCollector = new GraphQLCollector<Context, Post>({
   title: Select("post.title"),
   content: Select("post.content"),
   author: (ctx) => {
-    LeftJoin("user", "user.id", "post.author_id");
+    LeftJoin("user", "user.id", "post.author_id")(ctx);
 
     return {
       id: Select("user.id as authorId"),
@@ -178,7 +182,7 @@ const postCollector = new GraphQLCollector<Context, Post>({
 
 ### - Compose
 
-Allow us to call field handlers one by one:
+Compose allows us to call field handlers one by one:
 
 ```ts
 const postCollector = new GraphQLCollector<Context, Post>({
@@ -197,10 +201,11 @@ const postCollector = new GraphQLCollector<Context, Post>({
 
 ### - GraphQLCollectContext
 
-Also, if we don't need some auxilary functionality, we can use the GraphQLCollectContext with the tools above
+In addition, if you don't require auxiliary functionality, you can simply use
+the GraphQLCollectContext with the tools mentioned above.
 
-But keep in mind, that you have the opportunity to make own tools with own context.
-Short example:
+Remember, you have the option to develop your own tools with
+customized context. Here's a quick example:
 
 ```ts
 type Ctx = {
