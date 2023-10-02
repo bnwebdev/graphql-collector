@@ -1,6 +1,6 @@
 {
   "name": "graphql-fields-collector",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "main": "./dist/index.js",
   "description": "This package helps to bind client requested grapqhl fields with database queries.",
   "scripts": {
