@@ -4,3 +4,5 @@ src
 package-lock.json
 tsconfig.json
 .DS_Store
+.github
+.husky
