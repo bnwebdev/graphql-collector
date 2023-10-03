@@ -6,3 +6,4 @@ tsconfig.json
 .DS_Store
 .github
 .husky
+commitlint.config.js
