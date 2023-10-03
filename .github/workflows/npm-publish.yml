@@ -15,7 +15,7 @@ jobs:
         uses: pascalgn/npm-publish-action@1.3.9
 
         with:
-          - commit_pattern: ".*"
+          commit_pattern: ".*"
 
         env: # More info about the environment variables in the README
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
