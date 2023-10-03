@@ -11,7 +11,6 @@ import { GraphQLCollectBaseContext } from "./types";
  *   title: Collect('select', 'post.title'),
  *   content: Collect('select', 'post.content')
  * })
- *
  * const rootResolver = {
  *   Query {
  *     post(_parent, _args, _context, info) {
