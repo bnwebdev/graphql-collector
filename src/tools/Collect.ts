@@ -6,6 +6,7 @@ import { GraphQLCollectBaseContext } from "./types";
  *   title: string
  *   content: string
  * }
+ *
  * const collector = new GraphQLCollector<{ select: string[] }, Post>({
  *   title: Collect('select', 'post.title'),
  *   content: Collect('select', 'post.content')
