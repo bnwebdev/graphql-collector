@@ -4,20 +4,42 @@ export type GraphQLPrimitiveType = null | number | string | boolean | Date;
 
 export type GraphQLResolveInfo = Parameters<typeof graphqlFields>[0];
 
-export type GraphQLFieldFnEndHandler<Ctx> = (ctx: Ctx) => void;
+export type GraphQLFieldFnEndHandler<Context> = (context: Context) => void;
 
-export type GraphQLFieldFnHandler<Ctx, R extends Record<string, any>> = {
-  (ctx: Ctx): void | GraphQLFieldRecordHandler<Ctx, R>;
+type ObjectType = Record<string | number | symbol, unknown>;
+
+export type GraphQLFieldFnHandler<Context, RecordLike extends ObjectType> = {
+  (context: Context): void | GraphQLFieldRecordHandler<Context, RecordLike>;
 };
 
-export type GraphQLFieldRecordHandler<Ctx, R extends Record<string, any>> = {
-  [Key in keyof R]?: R[Key] extends Record<string, unknown>
-    ? GraphQLFieldHandler<Ctx, R[Key]>
-    : R[Key] extends GraphQLPrimitiveType
-    ? GraphQLFieldFnHandler<Ctx, R[Key]>
-    : never;
+export type NonNullableValue<
+  RecordLike extends ObjectType,
+  Key extends string | number | symbol
+> = NonNullable<RecordLike[Key]>;
+
+export type ResolveHandlerType<Context, Type> = Type extends ObjectType[]
+  ? GraphQLFieldHandler<Context, Type[number]>
+  : Type extends unknown[]
+  ? GraphQLFieldFnEndHandler<Context>
+  : Type extends ObjectType
+  ? GraphQLFieldHandler<Context, Type>
+  : Type extends GraphQLPrimitiveType
+  ? GraphQLFieldFnEndHandler<Context>
+  : never;
+
+export type GraphQLFieldRecordHandler<
+  Context,
+  RecordLike extends ObjectType
+> = {
+  [Key in keyof RecordLike]?: ResolveHandlerType<
+    Context,
+    NonNullableValue<RecordLike, Key>
+  >;
 };
 
-export type GraphQLFieldHandler<Ctx, R extends Record<string, any>> =
-  | GraphQLFieldFnHandler<Ctx, R>
-  | GraphQLFieldRecordHandler<Ctx, R>;
+export type GraphQLFieldHandler<
+  Context,
+  RecordLike extends Record<string, any>
+> =
+  | GraphQLFieldFnHandler<Context, RecordLike>
+  | GraphQLFieldRecordHandler<Context, RecordLike>;
