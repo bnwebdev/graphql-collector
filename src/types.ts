@@ -1,12 +1,12 @@
 import graphqlFields from "graphql-fields";
 
+export type ObjectType = Record<string | number | symbol, unknown>;
+
 export type GraphQLPrimitiveType = null | number | string | boolean | Date;
 
 export type GraphQLResolveInfo = Parameters<typeof graphqlFields>[0];
 
 export type GraphQLFieldFnEndHandler<Context> = (context: Context) => void;
-
-type ObjectType = Record<string | number | symbol, unknown>;
 
 export type GraphQLFieldFnHandler<Context, RecordLike extends ObjectType> = {
   (context: Context): void | GraphQLFieldRecordHandler<Context, RecordLike>;
